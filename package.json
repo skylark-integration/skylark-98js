@@ -1,0 +1,57 @@
+{
+  "name": "skylark-98js",
+  "description": "A version of 98js.js that ported to running on skylarkjs",
+  "version": "0.9.0",
+  "keywords": [
+    "skylark",
+    "ui",
+    "bootstrap4"
+  ],
+  "homepage": "https://github.com/skylark-integration/skylark-98js/",
+  "author": "Hudaokeji, Inc.",
+  "scripts": {
+    "build": "slib build ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/skylark-integration/skylark-98js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/skylark-integration/skylark-98js/issues"
+  },
+  "files": [
+    "demo/",
+    "dist/",
+    "src/",
+    "skins/"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "skylark-clippy": "git+https://github.com/skylark-integration/skylark-clippy.git",
+    "skylark-jqueryui": "git+https://github.com/skylark-integration/skylark-jqueryui.git",
+    "skylark-jquery": "git+https://github.com/skylark-integration/skylark-jquery.git",
+    "skylark-langx": "git+https://github.com/skylarklangx/skylark-langx.git"
+  },
+  "skylarkjs": {
+    "build": {
+      "prepare": {
+        "texttojs": [
+          "html",
+          "json",
+          "css"
+        ],
+        "jsxtojs": false,
+        "es6toamd": false,
+        "cjstoamd": false
+      },
+      "bundle": {
+        "standard": {
+          "include": []
+        }
+      }
+    }
+  },
+  "engines": {
+    "node": ">=0.10.1"
+  }
+}
