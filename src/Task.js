@@ -20,7 +20,7 @@ define([
 			$icon = win.getIconAtSize(16);
 			if (!$icon) {
 				// $icon = $("<img src='images/icons/task-16x16.png'/>");
-				old_$icon?.remove();
+				old_$icon && old_$icon.remove();
 				return;
 			}
 			if (old_$icon) {

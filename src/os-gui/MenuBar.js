@@ -161,7 +161,7 @@ define([
 		});
 		window.addEventListener("focusout", (event) => {
 			// if not still in menus, unhighlight (e.g. if you hit Escape to unfocus the menus)
-			if (event.relatedTarget?.closest?.(".menu-popup, .menus")) {
+			if (event.relatedTarget && event.relatedTarget.closest && event.relatedTarget.closest(".menu-popup, .menus")) {
 				return;
 			}
 			top_level_highlight(-1);
@@ -180,7 +180,7 @@ define([
 
 		function send_info_event(item) {
 			// @TODO: in a future version, give the whole menu item definition (or null)
-			const description = item?.description || "";
+			const description = item && item.description || "";
 			if (window.jQuery) {
 				// old API (using jQuery's "extraParameters"), made forwards compatible with new API (event.detail)
 				const event = new window.jQuery.Event("info", { detail: { description } });
@@ -206,9 +206,9 @@ define([
 			const active_menu_popup = active_menu_popup_el && menu_popup_by_el.get(active_menu_popup_el);
 			const top_level_menu = top_level_menus[top_level_menu_index];
 			const { menu_button_el, open_top_level_menu } = top_level_menu || {};
-			const menu_popup_el = active_menu_popup_el || top_level_menu?.menu_popup_el;
+			const menu_popup_el = active_menu_popup_el || top_level_menu && top_level_menu.menu_popup_el;
 			const parent_item_el = parent_item_el_by_popup_el.get(active_menu_popup_el);
-			const highlighted_item_el = menu_popup_el?.querySelector(".menu-item.highlight");
+			const highlighted_item_el = menu_popup_el && menu_popup_el.querySelector(".menu-item.highlight");
 
 			// console.log("keydown", e.key, { target: e.target, active_menu_popup_el, top_level_menu, menu_popup_el, parent_item_el, highlighted_item_el });
 
@@ -217,7 +217,7 @@ define([
 				case 39: // Right
 					const right = e.keyCode === 39;
 					if (
-						highlighted_item_el?.classList.contains("has-submenu") &&
+						highlighted_item_el && highlighted_item_el.classList.contains("has-submenu") &&
 						(get_direction() === "ltr") === right
 					) {
 						// enter submenu
@@ -258,7 +258,7 @@ define([
 						if (menu_was_open) {
 							new_top_level_menu.open_top_level_menu("keydown");
 						} else {
-							menu_button_el?.dispatchEvent(new CustomEvent("release"), {});
+							menu_button_el && menu_button_el.dispatchEvent(new CustomEvent("release"), {});
 							target_button_el.focus({ preventScroll: true });
 							// Note case where menu is closed, menu button is hovered, then menu bar is unhovered,
 							// rehovered(outside any buttons), and unhovered, and THEN you try to go to the next menu.
@@ -285,7 +285,7 @@ define([
 						send_info_event(active_menu_popup.menuItems[active_menu_popup.itemElements.indexOf(to_item_el)]);
 						e.preventDefault();
 					} else {
-						open_top_level_menu?.("keydown");
+						open_top_level_menu && open_top_level_menu("keydown");
 					}
 					e.preventDefault();
 					break;
@@ -331,7 +331,7 @@ define([
 						open_top_level_menu("keydown");
 						e.preventDefault();
 					} else {
-						highlighted_item_el?.click();
+						highlighted_item_el && highlighted_item_el.click();
 						e.preventDefault();
 					}
 					break;
@@ -346,7 +346,7 @@ define([
 						const accelerator = item_el.querySelector(".menu-hotkey");
 						const accelerator_key = (accelerator ?
 							accelerator.textContent :
-							(item_el.querySelector(".menu-item-label") ?? item_el).textContent[0]
+							(item_el.querySelector(".menu-item-label") /*??*/ ||  item_el).textContent[0]
 						).toLowerCase();
 						item_els_by_accelerator[accelerator_key] = item_els_by_accelerator[accelerator_key] || [];
 						item_els_by_accelerator[accelerator_key].push(item_el);
@@ -579,7 +579,7 @@ define([
 
 						const submenu_popup = new MenuPopup(item.submenu, { parentMenuPopup: this });
 						submenu_popup_el = submenu_popup.element;
-						document.body?.appendChild(submenu_popup_el);
+						document.body && document.body.appendChild(submenu_popup_el);
 						submenu_popup_el.style.display = "none";
 
 						item_el.setAttribute("aria-haspopup", "true");
@@ -793,7 +793,7 @@ define([
 
 			const menu_popup = new MenuPopup(menu_items);
 			const menu_popup_el = menu_popup.element;
-			document.body?.appendChild(menu_popup_el);
+			document.body && document.body.appendChild(menu_popup_el);
 			submenu_popups_by_menu_item_el.set(menu_button_el, menu_popup);
 			parent_item_el_by_popup_el.set(menu_popup_el, menu_button_el);
 			menu_button_el.id = `menu-button-${menus_key}-${uid()}`;
@@ -933,7 +933,7 @@ define([
 			close_menus();
 		});
 		function close_menus_on_click_outside(event) {
-			if (event.target?.closest?.(".menus, .menu-popup")) {
+			if (event.target && event.target.closest && event.target.closest(".menus, .menu-popup")) {
 				return;
 			}
 			// window.console && console.log(event.type, "occurred outside of menus (on ", event.target, ") so...");

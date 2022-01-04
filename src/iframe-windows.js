@@ -114,7 +114,7 @@ define([
 			// go outside the window.
 			iframe.contentWindow.showMessageBox = (options) => {
 				return showMessageBox({
-					title: options.title ?? iframe.contentWindow.defaultMessageBoxTitle,
+					title: options.title /*??*/ ||  iframe.contentWindow.defaultMessageBoxTitle,
 					...options,
 				});
 			};
@@ -158,8 +158,10 @@ define([
 	}
 
 	function make_iframe_window(options) {
-
-		options.resizable ??= true;
+		///options.resizable ??= true;
+		if (options.resizable == undefined) {
+			options.resizable = true;
+		}
 		var $win = new $Window(options);
 
 		var $iframe = $win.$iframe = $("<iframe>").attr({ src: options.src });

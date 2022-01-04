@@ -13,7 +13,7 @@ define([
 	var chord_audio = new Audio("/audio/CHORD.WAV");
 
 	window.showMessageBox = window.showMessageBox || (({
-		title = window.defaultMessageBoxTitle ?? "Alert",
+		title = window.defaultMessageBoxTitle /*??*/ ||  "Alert",
 		message,
 		messageHTML,
 		buttons = [{ label: "OK", value: "ok", default: true }],
@@ -64,7 +64,7 @@ define([
 			});
 			for (const button of buttons) {
 				const $button = $window.$Button(button.label, () => {
-					button.action?.(); // API may be required for using user gesture requiring APIs
+					button.action && button.action(); // API may be required for using user gesture requiring APIs
 					resolve(button.value);
 					$window.close(); // actually happens automatically
 				});

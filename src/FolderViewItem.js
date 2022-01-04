@@ -78,7 +78,7 @@ define([
 					$icon_wrapper.prepend($icon);
 				}
 			} else {
-				$icon?.remove();
+				$icon && $icon.remove();
 				$icon = null;
 				$selection_effect[0].style.setProperty("--icon-image", "none");
 			}

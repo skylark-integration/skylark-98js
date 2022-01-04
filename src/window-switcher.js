@@ -28,8 +28,8 @@ define([
 		if (tasks.length === 1) {
 			activate_window(tasks[0].$window);
 			if (!used_window_switcher) {
-				agent?.stopCurrent(); // needed to continue on from the message with `hold` set (speak(message, true))
-				agent?.speak("If there's only one window, Alt+` will switch to it right away.");
+				agent && agent.stopCurrent(); // needed to continue on from the message with `hold` set (speak(message, true))
+				agent && agent.speak("If there's only one window, Alt+` will switch to it right away.");
 				// used_window_switcher = true; // allow the switching message to be spoken later
 			}
 			return;
@@ -44,7 +44,7 @@ define([
 		for (const task of tasks) {
 			var $window = task.$window;
 			var $item = $("<li>").addClass("window-switcher-item");
-			$item.append($window.getIconAtSize(32) ?? $("<img>").attr({
+			$item.append($window.getIconAtSize(32) /*??*/ ||  $("<img>").attr({
 				src: "/images/icons/task-32x32.png",
 				width: 32,
 				height: 32,
@@ -63,9 +63,9 @@ define([
 		$window_switcher.appendTo("body");
 		// console.log("Showing window switcher", $window_switcher[0]);
 		if (!used_window_switcher) {
-			agent?.stopCurrent(); // needed to continue on from the message with `hold` set (speak(message, true))
+			agent && agent.stopCurrent(); // needed to continue on from the message with `hold` set (speak(message, true))
 			// Um, if you know about Alt+Tab, you can guess about how Alt+` works. But Clippy is supposed to be annoying, right?
-			agent?.speak("There you go! Press grave accent until you get to the window you want.");
+			agent && agent.speak("There you go! Press grave accent until you get to the window you want.");
 			used_window_switcher = true;
 		}
 	}
@@ -106,9 +106,9 @@ define([
 	function handle_keydown(e) {
 		if (e.altKey && (e.key === "4" || e.key === "F4")) { // we can't actually intercept Alt+F4, but might as well try, right?
 			e.preventDefault();
-			const $window = e.target.closest(".os-window")?.$window;
+			const $window = e.target.closest(".os-window") && e.target.closest(".os-window").$window;
 			console.log("Alt+4 detected, closing window", $window, e.target);
-			$window?.close();
+			$window && $window.close();
 		}
 		// console.log(e.key, e.code);
 		if (e.altKey && (e.code === "Backquote" || e.code === "Tab")) {

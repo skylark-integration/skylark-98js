@@ -239,26 +239,26 @@ define([
 					// then folders, then everything else
 					///item.resolvedStats?.isDirectory() ? 1 : 0;
 					item.resolvedStats && item.resolvedStats.isDirectory() ? 1 : 0;
-			const get_ext = (item) => (item.file_path ?? "").split(".").pop();
+			const get_ext = (item) => (item.file_path ||/*??*/ "").split(".").pop();
 			if (this.config.sort_mode === FolderView.SORT_MODES.NAME) {
 				this.items.sort((a, b) =>
 					dir_ness(b) - dir_ness(a) ||
-					(a.title ?? "").localeCompare(b.title ?? "")
+					(a.title ||/*??*/ "").localeCompare(b.title ||/*??*/ "")
 				);
 			} else if (this.config.sort_mode === FolderView.SORT_MODES.TYPE) {
 				this.items.sort((a, b) =>
 					dir_ness(b) - dir_ness(a) ||
-					(get_ext(a) ?? "").localeCompare(get_ext(b) ?? "")
+					(get_ext(a) ||/*??*/ "").localeCompare(get_ext(b) ||/*??*/ "")
 				);
 			} else if (this.config.sort_mode === FolderView.SORT_MODES.SIZE) {
 				this.items.sort((a, b) =>
 					dir_ness(b) - dir_ness(a) ||
-					(a.resolvedStats?.size ?? 0) - (b.resolvedStats?.size ?? 0)
+					(a.resolvedStats.size ||/*??*/ 0) - (b.resolvedStats && b.resolvedStats.size ||/*??*/ 0)
 				);
 			} else if (this.config.sort_mode === FolderView.SORT_MODES.DATE) {
 				this.items.sort((a, b) =>
 					dir_ness(b) - dir_ness(a) ||
-					(a.resolvedStats?.mtime ?? 0) - (b.resolvedStats?.mtime ?? 0)
+					(a.resolvedStats && a.resolvedStats.mtime ||/*??*/ 0) - (b.resolvedStats && b.resolvedStats.mtime ||/*??*/ 0)
 				);
 			}
 			for (const item of this.items) {
@@ -294,14 +294,14 @@ define([
 				});
 				// console.log("this.element.ownerDocument.activeElement", this.element.ownerDocument.activeElement);
 				// if (this.element.ownerDocument.activeElement === this.element) {
-				this.items[0]?.element.focus();
+				this.items[0] && this.items[0].element.focus();
 				// }
 				updateStatus();
 			}
 		};
 
 		function updateStatus() {
-			onStatus?.({
+			onStatus && onStatus({
 				items: self.items,
 				selectedItems: self.items.filter((item) => item.element.classList.contains("selected")),
 			});
@@ -325,7 +325,7 @@ define([
 			$folder_view.focus();
 			// This doesn't do much if it's yet to be populated:
 			if ($folder_view.find(".desktop-icon.focused").length === 0) {
-				this.items[0]?.element.focus();
+				this.items[0] && this.items[0].element.focus();
 			}
 			// Initial focus is handled in arrange_icons currently.
 		};
@@ -686,7 +686,7 @@ define([
 			if (extend_selection && !selection_anchor_item_el) {
 				// select_item() hasn't been called yet (e.g. hitting Shift+Down without first hitting an arrow key without Shift, in a newly loaded folder view)
 				// use the focused item as the anchor
-				selection_anchor_item_el = self.items.find((item) => item.element.classList.contains("focused"))?.element ?? item_el_to_select;
+				selection_anchor_item_el = self.items.find((item) => item.element.classList.contains("focused"))/*?*/.element ||/*??*/ item_el_to_select;
 			}
 			// console.log("select_item", item_or_item_el, event, "extend_selection", extend_selection);
 			$folder_view.find(".desktop-icon").each(function (i, item_el) {

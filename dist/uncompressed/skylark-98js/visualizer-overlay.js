@@ -200,4 +200,6 @@ define([
 		}
 	}
 
+
+	return VisualizerOverlay;
 });

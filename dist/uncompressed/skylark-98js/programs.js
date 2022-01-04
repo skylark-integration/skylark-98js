@@ -6,8 +6,9 @@ define([
 	"./FolderViewItem",
 	"./iframe-windows",
 	"./Task",
+	"./visualizer-overlay",
 	"./os-gui/$Window"
-],function($,win98js,FilesystemSetup,helpers,FolderViewItem,iframeWindows,Task,$Window){
+],function($,win98js,FilesystemSetup,helpers,FolderViewItem,iframeWindows,Task,VisualizerOverlay, $Window){
 	let make_iframe_window = iframeWindows.make_iframe_window;
 
 	function show_help(options) {
@@ -824,7 +825,7 @@ define([
 						target_icon_size = 32;
 					}
 					const img = document.createElement("img");
-					img.src = getIconPath("winamp2", target_icon_size);
+					img.src = helpers.getIconPath("winamp2", target_icon_size);
 					return img;
 				};
 				winamp_interface.bringToFront = () => {
@@ -910,7 +911,7 @@ define([
 					}
 				};
 
-				mustHaveMethods(winamp_interface, windowInterfaceMethods);
+				helpers.mustHaveMethods(winamp_interface, helpers.windowInterfaceMethods);
 
 				let raf_id;
 				let global_pointerdown;

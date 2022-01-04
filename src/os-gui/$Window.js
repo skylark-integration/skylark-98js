@@ -156,7 +156,7 @@ define([
 		let iconSize = 16;
 		$w.setTitlebarIconSize = function (target_icon_size) {
 			if ($w.icons) {
-				$w.$icon?.remove();
+				$w.$icon && $w.$icon.remove();
 				$w.$icon = $($w.getIconAtSize(target_icon_size));
 				$w.$icon.prependTo($w.$titlebar);
 			}
@@ -218,14 +218,14 @@ define([
 			$w.$icon = $Icon(icon_name, TITLEBAR_ICON_SIZE);
 			old_$icon.replaceWith($w.$icon);
 			$w.icon_name = icon_name;
-			$w.task?.updateIcon();
+			$w.task && $w.task.updateIcon();
 			$w.trigger("icon-change");
 			return $w;
 		};
 		$w.setIcons = (icons) => {
 			$w.icons = icons;
 			$w.setTitlebarIconSize(iconSize);
-			$w.task?.updateIcon();
+			$w.task && $w.task.updateIcon();
 			// icon-change already sent by setTitlebarIconSize
 		};
 
@@ -433,13 +433,13 @@ define([
 
 				return function handle_focus_in_out(event) {
 					const container_node = logical_container_el.tagName == "IFRAME" ? logical_container_el.contentDocument : logical_container_el;
-					const document = container_node.ownerDocument ?? container_node;
+					const document = container_node.ownerDocument /*??*/ ||  container_node;
 					// is this equivalent?
 					// const document = logical_container_el.tagName == "IFRAME" ? logical_container_el.contentDocument : logical_container_el.ownerDocument;
 
 					// console.log(`handling ${event.type} for container`, container_el);
 					let newly_focused = event ? (event.type === "focusout" || event.type === "blur") ? event.relatedTarget : event.target : document.activeElement;
-					if (event?.type === "blur") {
+					if (event && event.type === "blur") {
 						newly_focused = null; // only handle iframe
 					}
 
@@ -449,7 +449,7 @@ define([
 					if (
 						document.activeElement &&
 						document.activeElement.tagName === "IFRAME" &&
-						(event?.type === "focusout" || event?.type === "blur") &&
+						(event && event.type === "focusout" || event && event.type === "blur") &&
 						!newly_focused // doesn't exist for security reasons in this case
 					) {
 						newly_focused = document.activeElement;
@@ -520,7 +520,7 @@ define([
 							// 	console.warn("what is this?", newly_focused);
 							// 	break;
 							// }
-							const waypoint = newly_focused?.closest?.("[data-semantic-parent]");
+							const waypoint = newly_focused && newly_focused.closest && newly_focused.closest("[data-semantic-parent]");
 							if (waypoint) {
 								const id = waypoint.dataset.semanticParent;
 								const parent = waypoint.ownerDocument.getElementById(id);
@@ -557,7 +557,7 @@ define([
 									target: el,
 									view: el.ownerDocument.defaultView,
 								}));
-								el = el.currentView?.frameElement;
+								el = el.currentView && el.currentView.frameElement;
 							}
 						}
 					} else if (is_root) {
@@ -588,7 +588,7 @@ define([
 
 		let before_minimize;
 		$w.minimize = () => {
-			minimize_target_el = minimize_target_el || task?.$task[0];
+			minimize_target_el = minimize_target_el || task && task.$task[0];
 			if (animating_titlebar) {
 				when_done_animating_titlebar.push($w.minimize);
 				return;
@@ -820,9 +820,9 @@ define([
 			}
 		};
 		// must not pass event to functions by accident; also methods may not be defined yet
-		$w.$minimize?.on("click", (e)=> { $w.minimize(); });
-		$w.$maximize?.on("click", (e)=> { $w.maximize(); });
-		$w.$x?.on("click", (e)=> { $w.close(); });
+		$w.$minimize && $w.$minimize.on("click", (e)=> { $w.minimize(); });
+		$w.$maximize && $w.$maximize.on("click", (e)=> { $w.maximize(); });
+		$w.$x && $w.$x.on("click", (e)=> { $w.close(); });
 		$w.$title_area.on("dblclick", (e)=> { $w.maximize(); });
 
 		$w.css({
@@ -870,7 +870,7 @@ define([
 				}
 			}
 			if (cross_origin) {
-				if (options.iframes?.ignoreCrossOrigin && !warned_iframes.has(iframe)) {
+				if (options.iframes && options.iframes.ignoreCrossOrigin && !warned_iframes.has(iframe)) {
 					console.warn(...log_template(`Only same-origin iframes can work with focus integration (showing window as focused, refocusing last focused controls).
 	If you can re-host the content on the same origin, you can resolve this and enable focus integration.
 	You can also disable this warning by passing {iframes: {ignoreCrossOrigin: true}} to $Window.`));
@@ -913,8 +913,8 @@ define([
 			while (svg.lastChild) {
 				svg.removeChild(svg.lastChild);
 			}
-			const descendant_rect = descendant_el.getBoundingClientRect?.() ?? { left: 0, top: 0, width: innerWidth, height: innerHeight, right: innerWidth, bottom: innerHeight };
-			const container_rect = container_el.getBoundingClientRect?.() ?? { left: 0, top: 0, width: innerWidth, height: innerHeight, right: innerWidth, bottom: innerHeight };
+			const descendant_rect = descendant_el.getBoundingClientRect && descendant_el.getBoundingClientRect() ||/*??*/ { left: 0, top: 0, width: innerWidth, height: innerHeight, right: innerWidth, bottom: innerHeight };
+			const container_rect = container_el.getBoundingClientRect && ontainer_el.getBoundingClientRect() ||/*??*/ { left: 0, top: 0, width: innerWidth, height: innerHeight, right: innerWidth, bottom: innerHeight };
 			// draw rectangles with labels
 			for (const rect of [descendant_rect, container_rect]) {
 				const rect_el = document.createElementNS("http://www.w3.org/2000/svg", "rect");
@@ -1087,7 +1087,7 @@ define([
 					return;
 				}
 				// If menus got focus, don't refocus.
-				if (document.activeElement?.closest?.(".menus, .menu-popup")) {
+				if (document.activeElement && document.activeElement.closest && document.activeElement.closest(".menus, .menu-popup")) {
 					// console.log("click in menus");
 					return;
 				}
@@ -1234,9 +1234,9 @@ define([
 
 		var drag_offset_x, drag_offset_y, drag_pointer_x, drag_pointer_y, drag_pointer_id;
 		var update_drag = (e) => {
-			if (drag_pointer_id === (e.pointerId ?? e.originalEvent.pointerId)) {
-				drag_pointer_x = e.clientX ?? drag_pointer_x;
-				drag_pointer_y = e.clientY ?? drag_pointer_y;
+			if (drag_pointer_id === (e.pointerId ||/*??*/ e.originalEvent.pointerId)) {
+				drag_pointer_x = e.clientX ||/*??*/ drag_pointer_x;
+				drag_pointer_y = e.clientY ||/*??*/ drag_pointer_y;
 			}
 			$w.css({
 				left: drag_pointer_x + scrollX - drag_offset_x,
@@ -1294,13 +1294,13 @@ define([
 			drag_offset_y = e.clientY + scrollY - $w.position().top;
 			drag_pointer_x = e.clientX;
 			drag_pointer_y = e.clientY;
-			drag_pointer_id = (e.pointerId ?? e.originalEvent.pointerId);
+			drag_pointer_id = (e.pointerId ||/*??*/ e.originalEvent.pointerId);
 			$G.on("pointermove", update_drag);
 			$G.on("scroll", update_drag);
 			$("body").addClass("dragging"); // for when mouse goes over an iframe
 		});
 		$G.on("pointerup pointercancel", (e) => {
-			if ((e.pointerId ?? e.originalEvent.pointerId) !== drag_pointer_id) { return; }
+			if ((e.pointerId ||/*??*/ e.originalEvent.pointerId) !== drag_pointer_id) { return; }
 			$G.off("pointermove", update_drag);
 			$G.off("scroll", update_drag);
 			$("body").removeClass("dragging");
@@ -1387,20 +1387,20 @@ define([
 					resize_offset_y = e.clientY + scrollY - rect.y - (y_axis === HANDLE_BOTTOM ? rect.height : 0);
 					resize_pointer_x = e.clientX;
 					resize_pointer_y = e.clientY;
-					resize_pointer_id = (e.pointerId ?? e.originalEvent.pointerId);
+					resize_pointer_id = (e.pointerId ||/*??*/ e.originalEvent.pointerId);
 
 					$handle[0].setPointerCapture(resize_pointer_id); // keeps cursor consistent when mouse moves over other elements
 
 					// handle_pointermove(e); // was useful for checking that the offset is correct (should not do anything, if it's correct!)
 				});
 				function handle_pointermove(e) {
-					if ((e.pointerId ?? e.originalEvent.pointerId) !== resize_pointer_id) { return; }
+					if ((e.pointerId ||/*??*/ e.originalEvent.pointerId) !== resize_pointer_id) { return; }
 					resize_pointer_x = e.clientX;
 					resize_pointer_y = e.clientY;
 					update_resize();
 				}
 				function end_resize(e) {
-					if ((e.pointerId ?? e.originalEvent.pointerId) !== resize_pointer_id) { return; }
+					if ((e.pointerId ||/*??*/ e.originalEvent.pointerId) !== resize_pointer_id) { return; }
 					$G.off("pointermove", handle_pointermove);
 					$G.off("scroll", onscroll);
 					$("body").removeClass("dragging");
@@ -1445,10 +1445,10 @@ define([
 					if (options.constrainRect) {
 						new_rect = options.constrainRect(new_rect, x_axis, y_axis);
 					}
-					new_rect.width = Math.max(new_rect.width, options.minOuterWidth ?? 100);
-					new_rect.height = Math.max(new_rect.height, options.minOuterHeight ?? 0);
-					new_rect.width = Math.max(new_rect.width, (options.minInnerWidth ?? 0) + window_frame_width);
-					new_rect.height = Math.max(new_rect.height, (options.minInnerHeight ?? 0) + window_frame_height);
+					new_rect.width = Math.max(new_rect.width, options.minOuterWidth ||/*??*/ 100);
+					new_rect.height = Math.max(new_rect.height, options.minOuterHeight ||/*??*/ 0);
+					new_rect.width = Math.max(new_rect.width, (options.minInnerWidth ||/*??*/ 0) + window_frame_width);
+					new_rect.height = Math.max(new_rect.height, (options.minInnerHeight ||/*??*/ 0) + window_frame_height);
 					// prevent free movement via resize past minimum size
 					if (x_axis === HANDLE_LEFT) {
 						new_rect.x = Math.min(new_rect.x, rect.x + rect.width - new_rect.width);
@@ -1503,7 +1503,7 @@ define([
 			const $eye_leader = $w.$titlebar.clone(true);
 			$eye_leader.find("button").remove();
 			$eye_leader.appendTo("body");
-			const duration_ms = $Window.OVERRIDE_TRANSITION_DURATION ?? 200; // TODO: how long?
+			const duration_ms = $Window.OVERRIDE_TRANSITION_DURATION ||/*??*/ 200; // TODO: how long?
 			const duration_str = `${duration_ms}ms`;
 			$eye_leader.css({
 				transition: `left ${duration_str} linear, top ${duration_str} linear, width ${duration_str} linear, height ${duration_str} linear`,
@@ -1533,7 +1533,8 @@ define([
 				animating_titlebar = false;
 				$eye_leader.remove();
 				callback();
-				when_done_animating_titlebar.shift()?.(); // relies on animating_titlebar = false;
+				let anima = when_done_animating_titlebar.shift()
+				anima && anima(); // relies on animating_titlebar = false;
 			};
 			$eye_leader.on("transitionend transitioncancel", handle_transition_completion);
 			setTimeout(handle_transition_completion, duration_ms * 1.2);

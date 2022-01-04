@@ -112,5 +112,8 @@ define([
 
 	programs.initDesktopFolderView(folder_view);
 
+
+	$desktop.reflow();
+
 	return win98js.$desktop = $desktop;
 });
