@@ -303,6 +303,7 @@ define([
 			}
 			$w.addClass("focused");
 			$event_target.triggerHandler("focus");
+			$w.trigger("focus");
 		};
 		const stopShowingAsFocused = () => {
 			if (!$w.hasClass("focused")) {
@@ -310,6 +311,7 @@ define([
 			}
 			$w.removeClass("focused");
 			$event_target.triggerHandler("blur");
+			$w.trigger("blur");
 		};
 		$w.focus = () => {
 			// showAsFocused();	

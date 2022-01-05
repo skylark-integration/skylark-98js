@@ -26257,7 +26257,7 @@ define('skylark-browserfs/libs/ieee754',[],function(){
   return exports;
 });
 
-define('skylark-browserfs/libs/buffer',[
+define('skylark-browserfs/libs/buffers',[
   "./base64",
   "./ieee754"
 ],function(base64,ieee754){
@@ -28003,7 +28003,11 @@ define('skylark-browserfs/libs/buffer',[
   return exports;
 
 });
-define('skylark-browserfs/core/api_error',[],function () {
+define('skylark-browserfs/core/api_error',[
+  '../libs/buffers'
+],function (buffers) {
+    const { Buffer } = buffers;
+
     /**
      * Standard libc error codes. Add more to this enum and ErrorStrings as they are
      * needed.
@@ -28731,8 +28735,12 @@ define('skylark-browserfs/libs/path',[],function(){
 
 	return path;
 });
-define('skylark-browserfs/core/node_fs_stats',[],function () {
+define('skylark-browserfs/core/node_fs_stats',[
+    '../libs/buffers'
+],function (buffers) {
     'use strict';
+    const { Buffer } = buffers;
+
     /**
      * Indicates the type of the given file. Applied to 'mode'.
      */
@@ -28991,17 +28999,19 @@ define('skylark-browserfs/generic/setImmediate',['../core/global'], function (gl
     return bfsSetImmediate;
 });
 define('skylark-browserfs/core/FS',[
+    '../libs/buffers',
     './api_error',
     './file_flag',
     '../libs/path',
     './node_fs_stats',
     '../generic/setImmediate'
-], function (api_error, file_flag, path, node_fs_stats, setImmediate) {
+], function (buffers,api_error, file_flag, path, node_fs_stats, setImmediate) {
     'use strict';
 
     const { ApiError, ErrorCode } = api_error;
     const { FileFlag } = file_flag;
     const {Stats} = node_fs_stats;
+    const { Buffer } = buffers;
 
     /** Used for unit testing. Defaults to a NOP. */
     let wrapCbHook = function (cb, numArgs) {
@@ -30287,15 +30297,15 @@ define('skylark-browserfs/core/levenshtein',[],function () {
     return levenshtein;
 });
 define('skylark-browserfs/core/util',[
-    '../libs/buffer',
+    '../libs/buffers',
     './api_error',
     './levenshtein',
     '../libs/path'
-], function (buffer,api_error, levenshtein, path) {
+], function (buffers,api_error, levenshtein, path) {
     'use strict';
 
     const { ErrorCode, ApiError } = api_error;
-    const {Buffer} = buffer;
+    const {Buffer} = buffers;
 
     function deprecationMessage(print, fsName, opts) {
         if (print) {
@@ -30909,11 +30919,12 @@ define('skylark-browserfs/generic/emscripten_fs',[
     return BFSEmscriptenFS;
 });
 define('skylark-browserfs/core/file_system',[
+    '../libs/buffers',
     './api_error',
     './file_flag',
     '../libs/path',
     './util'
-], function (api_error, file_flag, path, util) {
+], function (buffers,api_error, file_flag, path, util) {
     'use strict';
 
     const { ApiError, ErrorCode } = api_error;
@@ -31521,17 +31532,19 @@ define('skylark-browserfs/core/file',['./api_error'], function (api_error) {
     return { BaseFile: BaseFile };
 });
 define('skylark-browserfs/generic/preload_file',[
+    '../libs/buffers',
     '../core/file',
     '../core/node_fs_stats',
     '../core/api_error',
     '../core/node_fs',
     '../core/util'
-], function (file, Stats, api_error, fs, util) {
+], function (buffers,file, Stats, api_error, fs, util) {
     'use strict';
 
     const { BaseFile } = file;
     const { ApiError, ErrorCode } = api_error;
     const { emptyBuffer } = util;
+    const { Buffer } = buffers;
 
     /**
      * An implementation of the File interface that operates on a file that is
@@ -32233,6 +32246,7 @@ define('skylark-browserfs/backend/AsyncMirror',[
     return AsyncMirror;
 });
 define('skylark-browserfs/backend/Dropbox',[
+    '../libs/buffers',
     '../generic/preload_file',
     '../core/file_system',
     '../core/node_fs_stats',
@@ -32241,7 +32255,7 @@ define('skylark-browserfs/backend/Dropbox',[
 ///    'dropbox_bridge',
     '../generic/setImmediate',
     '../libs/path'
-], function (preload_file, file_system, node_fs_stats, api_error, util,  setImmediate, path) {
+], function (buffers,preload_file, file_system, node_fs_stats, api_error, util,  setImmediate, path) {
     'use strict';
 
     const { BaseFileSystem } = file_system;
@@ -32252,6 +32266,8 @@ define('skylark-browserfs/backend/Dropbox',[
     const { dirname } =  path;
 
     const { PreloadFile} = preload_file;
+
+    const {Buffer} = buffers;
 
 
     /**
@@ -32784,12 +32800,13 @@ define('skylark-browserfs/backend/Dropbox',[
     
 });
 define('skylark-browserfs/backend/Emscripten',[
+    '../libs/buffers',
     '../core/file_system',
     '../core/node_fs_stats',
     '../core/file',
     '../core/util',
     '../core/api_error'
-], function (file_system, node_fs_stats, file, util, api_error) {
+], function (buffers,file_system, node_fs_stats, file, util, api_error) {
     'use strict';
 
     const { SynchronousFileSystem } = file_system;
@@ -32797,6 +32814,7 @@ define('skylark-browserfs/backend/Emscripten',[
     const { BaseFile } = file;
     const { uint8Array2Buffer, buffer2Uint8array } = util;
     const { ApiError, ErrorCode, ErrorStrings } = api_error;
+    const { Buffer } = buffers;
 
     /**
      * @hidden
@@ -33838,11 +33856,13 @@ define('skylark-browserfs/backend/HTML5FS',[
     return HTML5FS;
 });
 define('skylark-browserfs/generic/inode',[
+    '../libs/buffers',
     '../core/node_fs_stats'
-], function (node_fs_stats) {
+], function (buffers,node_fs_stats) {
     'use strict';
 
     const  { Stats, FileType } = node_fs_stats;
+    const { Buffer } = buffers;
 
     /**
      * Generic inode definition that can easily be serialized.
@@ -33947,6 +33967,7 @@ define('skylark-browserfs/generic/inode',[
     return Inode;
 });
 define('skylark-browserfs/generic/key_value_filesystem',[
+    '../libs/buffers',
     '../core/file_system',
     '../core/api_error',
     '../core/node_fs_stats',
@@ -33954,7 +33975,7 @@ define('skylark-browserfs/generic/key_value_filesystem',[
     '../generic/inode',
     '../generic/preload_file',
     '../core/util'
-], function (file_system, api_error, node_fs_stats, path, Inode, preload_file, util) {
+], function (buffers,file_system, api_error, node_fs_stats, path, Inode, preload_file, util) {
     'use strict';
 
     const { BaseFileSystem, SynchronousFileSystem } = file_system;
@@ -33962,6 +33983,7 @@ define('skylark-browserfs/generic/key_value_filesystem',[
     const { FileType } = node_fs_stats;
     const { emptyBuffer } = util;
     const { PreloadFile} = preload_file;
+    const { Buffer } = buffers;
 
 
     /**
@@ -35423,17 +35445,17 @@ define('skylark-browserfs/backend/IndexedDB',[
     return IndexedDBFileSystem;
 });
 define('skylark-browserfs/backend/LocalStorage',[
+    '../libs/buffers',
     '../generic/key_value_filesystem',
     '../core/api_error',
-    '../core/global',
-    "../libs/buffer"
-], function (key_value_filesystem, api_error, global,buffer) {
+    '../core/global'
+], function (buffers,key_value_filesystem, api_error, global) {
     'use strict';
 
     const { SyncKeyValueFileSystem, SimpleSyncRWTransaction } = key_value_filesystem;
     const { ApiError, ErrorCode } = api_error;
 
-    const { Buffer} = buffer;
+    const { Buffer} = buffers;
 
     /**
      * Some versions of FF and all versions of IE do not support the full range of
@@ -37276,6 +37298,7 @@ define('skylark-browserfs/backend/OverlayFS',[
     return OverlayFS;
 });
 define('skylark-browserfs/backend/WorkerFS',[
+    '../libs/buffers',
     '../core/file_system',
     '../core/api_error',
     '../core/file_flag',
@@ -37285,7 +37308,7 @@ define('skylark-browserfs/backend/WorkerFS',[
     '../generic/preload_file',
     '../core/global',
     '../core/node_fs'
-], function (file_system, api_error, file_flag, util, file, node_fs_stats, preload_file, global, fs) {
+], function (buffers,file_system, api_error, file_flag, util, file, node_fs_stats, preload_file, global, fs) {
     'use strict';
 
     const { BaseFileSystem } = file_system;
@@ -37295,6 +37318,7 @@ define('skylark-browserfs/backend/WorkerFS',[
     const { BaseFile }  = file;
     const { Stats }  = node_fs_stats;
     const {PreloadFile}  = preload_file;
+    const { Buffer } = buffers;
 
     /**
      * @hidden
@@ -38031,9 +38055,10 @@ define('skylark-browserfs/backend/WorkerFS',[
     return WorkerFS;
 });
 define('skylark-browserfs/generic/xhr',[
+    '../libs/buffers',
     '../core/util',
     '../core/api_error'
-], function (util, api_error) {
+], function (buffers,util, api_error) {
     'use strict';
     /**
      * Contains utility methods for performing a variety of tasks with
@@ -38041,6 +38066,7 @@ define('skylark-browserfs/generic/xhr',[
      */
     const { isIE, emptyBuffer } = util;
     const { ApiError, ErrorCode } = api_error;
+    const { Buffer } = buffers;
 
     const xhrIsAvailable = (typeof (XMLHttpRequest) !== "undefined" && XMLHttpRequest !== null);
     function asyncDownloadFileModern(p, type, cb) {
@@ -38240,7 +38266,10 @@ define('skylark-browserfs/generic/xhr',[
         getFileSizeAsync: getFileSizeAsync
     };
 });
-define('skylark-browserfs/generic/fetch',['../core/api_error'], function (api_error) {
+define('skylark-browserfs/generic/fetch',[
+    '../libs/buffers',
+    '../core/api_error'
+], function (buffers,api_error) {
     'use strict';
 
     /**
@@ -38249,6 +38278,7 @@ define('skylark-browserfs/generic/fetch',['../core/api_error'], function (api_er
     const { ApiError, ErrorCode }= api_error;
 
     const fetchIsAvailable = (typeof (fetch) !== "undefined" && fetch !== null);
+    const { Buffer } = buffers;
 
     function fetchFileAsync(p, type, cb) {
         let request;
@@ -41242,7 +41272,7 @@ define('skylark-browserfs/core/backends',[
 });
 define('skylark-browserfs/core/browserfs',[
     '../libs/process',
-    '../libs/buffer',
+    '../libs/buffers',
     './node_fs',
     '../libs/path',
     '../generic/emscripten_fs',
@@ -41250,10 +41280,10 @@ define('skylark-browserfs/core/browserfs',[
     './util',
     './api_error',
     '../generic/setImmediate'
-], function (process,buffer, fs, path, EmscriptenFS, Backends, BFSUtils, Errors, setImmediate) {
+], function (process,buffers, fs, path, EmscriptenFS, Backends, BFSUtils, Errors, setImmediate) {
     'use strict';
 
-    const {Buffer} = buffer;
+    const {Buffer} = buffers;
     
     /**
      * BrowserFS's main module. This is exposed in the browser via the BrowserFS global.
@@ -43028,6 +43058,7 @@ define('skylark-98js/os-gui/$Window',[
 			}
 			$w.addClass("focused");
 			$event_target.triggerHandler("focus");
+			$w.trigger("focus");
 		};
 		const stopShowingAsFocused = () => {
 			if (!$w.hasClass("focused")) {
@@ -43035,6 +43066,7 @@ define('skylark-98js/os-gui/$Window',[
 			}
 			$w.removeClass("focused");
 			$event_target.triggerHandler("blur");
+			$w.trigger("blur");
 		};
 		$w.focus = () => {
 			// showAsFocused();	
@@ -44635,6 +44667,7 @@ define('skylark-98js/Task',[
 			}
 		});
 
+		/*
 		win.onFocus(() => {
 			$task.addClass("selected");
 		});
@@ -44642,6 +44675,20 @@ define('skylark-98js/Task',[
 			$task.removeClass("selected");
 		});
 		win.onClosed(() => {
+			$task.remove();
+			const index = Task.all_tasks.indexOf(this);
+			if (index !== -1) {
+				Task.all_tasks.splice(index, 1);
+			}
+		});
+		*/
+		win.on("focus",() => {
+			$task.addClass("selected");
+		});
+		win.on("blur",() => {
+			$task.removeClass("selected");
+		});
+		win.on("closed",() => {
 			$task.remove();
 			const index = Task.all_tasks.indexOf(this);
 			if (index !== -1) {

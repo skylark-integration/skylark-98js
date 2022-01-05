@@ -54,6 +54,7 @@ define([
 			}
 		});
 
+		/*
 		win.onFocus(() => {
 			$task.addClass("selected");
 		});
@@ -61,6 +62,20 @@ define([
 			$task.removeClass("selected");
 		});
 		win.onClosed(() => {
+			$task.remove();
+			const index = Task.all_tasks.indexOf(this);
+			if (index !== -1) {
+				Task.all_tasks.splice(index, 1);
+			}
+		});
+		*/
+		win.on("focus",() => {
+			$task.addClass("selected");
+		});
+		win.on("blur",() => {
+			$task.removeClass("selected");
+		});
+		win.on("closed",() => {
 			$task.remove();
 			const index = Task.all_tasks.indexOf(this);
 			if (index !== -1) {

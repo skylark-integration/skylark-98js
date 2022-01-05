@@ -1718,6 +1718,7 @@ define('skylark-98js/os-gui/$Window',[
 			}
 			$w.addClass("focused");
 			$event_target.triggerHandler("focus");
+			$w.trigger("focus");
 		};
 		const stopShowingAsFocused = () => {
 			if (!$w.hasClass("focused")) {
@@ -1725,6 +1726,7 @@ define('skylark-98js/os-gui/$Window',[
 			}
 			$w.removeClass("focused");
 			$event_target.triggerHandler("blur");
+			$w.trigger("blur");
 		};
 		$w.focus = () => {
 			// showAsFocused();	
@@ -3325,6 +3327,7 @@ define('skylark-98js/Task',[
 			}
 		});
 
+		/*
 		win.onFocus(() => {
 			$task.addClass("selected");
 		});
@@ -3332,6 +3335,20 @@ define('skylark-98js/Task',[
 			$task.removeClass("selected");
 		});
 		win.onClosed(() => {
+			$task.remove();
+			const index = Task.all_tasks.indexOf(this);
+			if (index !== -1) {
+				Task.all_tasks.splice(index, 1);
+			}
+		});
+		*/
+		win.on("focus",() => {
+			$task.addClass("selected");
+		});
+		win.on("blur",() => {
+			$task.removeClass("selected");
+		});
+		win.on("closed",() => {
 			$task.remove();
 			const index = Task.all_tasks.indexOf(this);
 			if (index !== -1) {
