@@ -18712,7 +18712,23 @@ define('skylark-domx-geom/geom',[
         }
     }
 
-    //viewport coordinate
+
+    /*
+     * Get the document size.
+     * @param {HTMLElement} elm
+     * @param {Number} value
+     */
+    function boundingHeight(elm, value) {
+        if (value == undefined) {
+            return boundingSize(elm).height;
+        } else {
+            boundingSize(elm, {
+                height: value
+            });
+            return this;
+        }
+    }
+
     /*
      * Get or set the viewport position of the specified element border box.
      * @param {HTMLElement} elm
@@ -18758,7 +18774,69 @@ define('skylark-domx-geom/geom',[
             }
         } else {
             boundingPosition(elm, coords);
-            size(elm, coords);
+            boundingSize(elm, coords);
+            return this;
+        }
+    }
+
+
+    /*
+     * Get or set the size of the specified element border box.
+     * @param {HTMLElement} elm
+     * @param {PlainObject}dimension
+     */
+    function boundingSize(elm, dimension) {
+        if (dimension == undefined) {
+            if (langx.isWindow(elm)) {
+                return {
+                    width: elm.innerWidth,
+                    height: elm.innerHeight
+                }
+
+            } else if (langx.isDocument(elm)) {
+                return getDocumentSize(document);
+            } else {
+                return {
+                    width: elm.offsetWidth,
+                    height: elm.offsetHeight
+                }
+            }
+        } else {
+            var isBorderBox = (styler.css(elm, "box-sizing") === "border-box"),
+                props = {
+                    width: dimension.width,
+                    height: dimension.height
+                };
+            if (!isBorderBox) {
+                var pex = paddingExtents(elm),
+                    bex = borderExtents(elm);
+
+                if (props.width !== undefined && props.width !== "" && props.width !== null) {
+                    props.width = props.width - pex.left - pex.right - bex.left - bex.right;
+                }
+
+                if (props.height !== undefined && props.height !== "" && props.height !== null) {
+                    props.height = props.height - pex.top - pex.bottom - bex.top - bex.bottom;
+                }
+            }
+            styler.css(elm, props);
+            return this;
+        }
+    }
+
+
+    /*
+     * Get or set the size of the specified element border box.
+     * @param {HTMLElement} elm
+     * @param {Number} value
+     */
+    function boundingWidth(elm, value) {
+        if (value == undefined) {
+            return boundingSize(elm).width;
+        } else {
+            boundingSize(elm, {
+                width: value
+            });
             return this;
         }
     }
@@ -18842,6 +18920,22 @@ define('skylark-domx-geom/geom',[
         }
     }
 
+
+    /*
+     * Get or set the height of the specified element content box.
+     * @param {HTMLElement} elm
+     */
+    function contentHeight(elm, value) {
+        if (value == undefined) {
+            return contentSize(elm).height;
+        } else {
+            contentSize(elm, {
+                height: value
+            });
+            return this;
+        }
+    }
+
     /*
      * Get the rect of the specified element content box.
      * @param {HTMLElement} elm
@@ -18865,6 +18959,59 @@ define('skylark-domx-geom/geom',[
     }
 
     /*
+     * Get or set the size of the specified element content box.
+     * @param {HTMLElement} elm
+     */
+    function contentSize(elm,dimension) {
+        var cs = clientSize(elm),
+            pex = paddingExtents(elm);
+
+        if (dimension === undefined) {
+            return {
+                width: cs.width - pex.left - pex.right,
+                height: cs.height - pex.top - pex.bottom
+            };
+        } else {
+            var isBorderBox = (styler.css(elm, "box-sizing") === "border-box"),
+                props = {
+                    width: dimension.width,
+                    height: dimension.height
+                };
+            if (isBorderBox) {
+                var bex = borderExtents(elm);
+
+                if (props.width !== undefined && props.width !== "" && props.width !== null) {
+                    props.width = props.width + pex.left + pex.right + bex.left + bex.right;
+                }
+
+                if (props.height !== undefined && props.height !== "" && props.height !== null) {
+                    props.height = props.height + pex.top + pex.bottom + bex.top + bex.bottom;
+                }
+            }
+            styler.css(elm, props);
+            return this;
+        }
+
+    }
+
+
+    /*
+     * Get or set the width of the specified element content box.
+     * @param {HTMLElement} elm
+     */
+    function contentWidth(elm, value) {
+        if (value == undefined) {
+            return contentSize(elm).width;
+        } else {
+            contentSize(elm, {
+                width: value
+            });
+            return this;
+        }
+    }
+
+
+    /*
      * Get the document size.
      * @param {HTMLDocument} doc
      */
@@ -18884,23 +19031,6 @@ define('skylark-domx-geom/geom',[
             height: scrollHeight < offsetHeight ? clientHeight : scrollHeight
         };
     }
-
-    /*
-     * Get the document size.
-     * @param {HTMLElement} elm
-     * @param {Number} value
-     */
-    function height(elm, value) {
-        if (value == undefined) {
-            return size(elm).height;
-        } else {
-            size(elm, {
-                height: value
-            });
-            return this;
-        }
-    }
-
 
 
     function inview(elm, cushion) {
@@ -18956,7 +19086,7 @@ define('skylark-domx-geom/geom',[
 
 
     function marginSize(elm) {
-        var obj = size(elm),
+        var obj = boundingSize(elm),
             me = marginExtents(elm);
 
         return {
@@ -19034,7 +19164,7 @@ define('skylark-domx-geom/geom',[
             }
         } else {
             pagePosition(elm, coords);
-            size(elm, coords);
+            boundingSize(elm, coords);
             return this;
         }
     }
@@ -19113,7 +19243,7 @@ define('skylark-domx-geom/geom',[
             }
         } else {
             relativePosition(elm, coords);
-            size(elm, coords);
+            boundingSize(elm, coords);
             return this;
         }
     }
@@ -19215,50 +19345,6 @@ define('skylark-domx-geom/geom',[
     }
 
 
-    /*
-     * Get or set the size of the specified element border box.
-     * @param {HTMLElement} elm
-     * @param {PlainObject}dimension
-     */
-    function size(elm, dimension) {
-        if (dimension == undefined) {
-            if (langx.isWindow(elm)) {
-                return {
-                    width: elm.innerWidth,
-                    height: elm.innerHeight
-                }
-
-            } else if (langx.isDocument(elm)) {
-                return getDocumentSize(document);
-            } else {
-                return {
-                    width: elm.offsetWidth,
-                    height: elm.offsetHeight
-                }
-            }
-        } else {
-            var isBorderBox = (styler.css(elm, "box-sizing") === "border-box"),
-                props = {
-                    width: dimension.width,
-                    height: dimension.height
-                };
-            if (!isBorderBox) {
-                var pex = paddingExtents(elm),
-                    bex = borderExtents(elm);
-
-                if (props.width !== undefined && props.width !== "" && props.width !== null) {
-                    props.width = props.width - pex.left - pex.right - bex.left - bex.right;
-                }
-
-                if (props.height !== undefined && props.height !== "" && props.height !== null) {
-                    props.height = props.height - pex.top - pex.bottom - bex.top - bex.bottom;
-                }
-            }
-            styler.css(elm, props);
-            return this;
-        }
-    }
-
 
     function viewportSize(win) {
         win = win || window;
@@ -19266,21 +19352,7 @@ define('skylark-domx-geom/geom',[
         return boundingRect(win);
     }
 
-    /*
-     * Get or set the size of the specified element border box.
-     * @param {HTMLElement} elm
-     * @param {Number} value
-     */
-    function width(elm, value) {
-        if (value == undefined) {
-            return size(elm).width;
-        } else {
-            size(elm, {
-                width: value
-            });
-            return this;
-        }
-    }
+
 
     function testAxis(elm) {
        
@@ -19326,32 +19398,34 @@ define('skylark-domx-geom/geom',[
 
     langx.mixin(geom, {
         borderExtents: borderExtents,
-        //viewport coordinate
-        boundingPosition: boundingPosition,
 
-        boundingRect: boundingRect,
+        boundingHeight,
+        boundingPosition,
+        boundingRect,
+        boundingSize,
+        boundingWidth,
 
-        clientHeight: clientHeight,
+        clientHeight,
+        clientSize,
+        clientWidth,
 
-        clientSize: clientSize,
-
-        clientWidth: clientWidth,
-
-        contentRect: contentRect,
+        contentHeight,
+        contentRect,
+        contentSize,
+        contentWidth,
 
         getDocumentSize: getDocumentSize,
 
         hasScrollbar,
 
-        height: height,
+        height: contentHeight,
 
         inview,
 
         marginExtents: marginExtents,
 
-        marginRect: marginRect,
-
-        marginSize: marginSize,
+        marginRect,
+        marginSize,
 
         offsetParent: offsetParent,
 
@@ -19377,13 +19451,13 @@ define('skylark-domx-geom/geom',[
 
         scrollBy,
             
-        size: size,
+        size: contentSize,
 
         testAxis,
 
         viewportSize,
 
-        width: width
+        width: contentWidth
     });
 
 
@@ -19885,12 +19959,21 @@ define('skylark-domx-geom/main',[
     velm.delegate([
         "borderExtents",
         "boundingPosition",
+        "boundingHeight",
         "boundingRect",
+        "boundingSize",
+        "boundingWidth",
+
         "clientHeight",
         "clientSize",
         "clientWidth",
+
+        "contentHeight",
         "contentRect",
-        "height",
+        "contentSize",
+        "contentWidth",
+
+///        "height",
         "marginExtents",
         "marginRect",
         "marginSize",
@@ -19903,10 +19986,10 @@ define('skylark-domx-geom/main',[
         "scrollIntoView",
         "scrollLeft",
         "scrollTop",
-        "pageSize",
-        "width"
+///        "pageSize",
+///        "width"
     ], geom,{
-        "pageSize" : "size"
+///        "pageSize" : "size"
     });
 
     $.fn.offset = $.wraps.wrapper_value(geom.pagePosition, geom, geom.pagePosition);
@@ -19939,13 +20022,14 @@ define('skylark-domx-geom/main',[
     $.fn.offsetParent = $.wraps.wrapper_map(geom.offsetParent, geom);
 
 
-    $.fn.pageSize = $.wraps.wrapper_value(geom.size, geom);
+    ///$.fn.pageSize = $.wraps.wrapper_value(geom.size, geom);
+    $.fn.boundingSize = $.wraps.wrapper_value(geom.boundingSize, geom);
 
     $.fn.width = $.wraps.wrapper_value(geom.width, geom, geom.width);
 
     $.fn.height = $.wraps.wrapper_value(geom.height, geom, geom.height);
 
-    $.fn.clientSize = $.wraps.wrapper_value(geom.clientSize, geom.clientSize);
+    $.fn.clientSize = $.wraps.wrapper_value(geom.clientSize, geom);
     
     ['width', 'height'].forEach(function(dimension) {
         var offset, Dimension = dimension.replace(/./, function(m) {
@@ -19968,7 +20052,7 @@ define('skylark-domx-geom/main',[
                 if (!el) {
                     return undefined;
                 }
-                var cb = geom.size(el);
+                var cb = geom.boundingSize(el);
                 if (margin) {
                     var me = geom.marginExtents(el);
                     cb.width = cb.width + me.left + me.right;
@@ -19990,7 +20074,7 @@ define('skylark-domx-geom/main',[
                             mb.height = mb.height - me.top - me.bottom;
                         }
                     }
-                    geom.size(el, mb);
+                    geom.boundingSize(el, mb);
                 })
 
             }

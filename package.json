@@ -31,7 +31,7 @@
     "skylark-clippy": "git+https://github.com/skylark-integration/skylark-clippy.git",
     "skylark-jqueryui": "git+https://github.com/skylark-integration/skylark-jqueryui.git",
     "skylark-jquery": "git+https://github.com/skylark-integration/skylark-jquery.git",
-    "skylark-langx": "git+https://github.com/skylarklangx/skylark-langx.git"
+    "skylark-langx": "git+https://github.com/skylark-langx/skylark-langx.git"
   },
   "skylarkjs": {
     "build": {
