@@ -296,7 +296,11 @@ requirejs.config({
        location : "../node_modules/skylark-domx-plugins-interact/dist/uncompressed/skylark-domx-plugins-interact",
         main: 'main'
       },
-
+      {
+        name: 'skylark-browserfs',
+        location : "../node_modules/skylark-browserfs/dist/uncompressed/skylark-browserfs",
+        main: 'main'
+      },
       {
         name: 'skylark-98js',
         location : "../src",

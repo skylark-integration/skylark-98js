@@ -27,6 +27,7 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "skylark-browserfs": "git+https://github.com/skylark-integration/skylark-browserfs.git",
     "skylark-clippy": "git+https://github.com/skylark-integration/skylark-clippy.git",
     "skylark-jqueryui": "git+https://github.com/skylark-integration/skylark-jqueryui.git",
     "skylark-jquery": "git+https://github.com/skylark-integration/skylark-jquery.git",
@@ -44,10 +45,11 @@
         "es6toamd": false,
         "cjstoamd": false
       },
-      "bundle": {
+      "bundles": {
         "standard": {
           "include": []
-        }
+        },
+        "all" : true
       }
     }
   },

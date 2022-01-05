@@ -1,10 +1,11 @@
 define([
 	"skylark-jquery",
+	"skylark-browserfs",
 	"./win98",
 	"./FolderViewItem",
 	"./filesystem-setup",
 	"./helpers"
-],function($,win98js,FolderViewItem,FilesystemSetup,helpers){
+],function($,BrowserFS, win98js,FolderViewItem,FilesystemSetup,helpers){
 	const grid_size_x_for_large_icons = 75;
 	const grid_size_y_for_large_icons = 75;
 	// @TODO: this is supposed to be dynamic based on length of names

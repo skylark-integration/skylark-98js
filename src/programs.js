@@ -1,5 +1,6 @@
 define([
 	"skylark-jquery",
+	"skylark-browserfs",
 	"./win98",
 	"./filesystem-setup",
 	"./helpers",
@@ -8,7 +9,7 @@ define([
 	"./Task",
 	"./visualizer-overlay",
 	"./os-gui/$Window"
-],function($,win98js,FilesystemSetup,helpers,FolderViewItem,iframeWindows,Task,VisualizerOverlay, $Window){
+],function($,BrowserFS, win98js,FilesystemSetup,helpers,FolderViewItem,iframeWindows,Task,VisualizerOverlay, $Window){
 	let make_iframe_window = iframeWindows.make_iframe_window;
 
 	function show_help(options) {

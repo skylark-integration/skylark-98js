@@ -1,7 +1,8 @@
 define([
 	"skylark-jquery",
+	"skylark-browserfs",
 	"./win98"
-],function($,win98js){
+],function($,BrowserFS, win98js){
 
 	var __fs_initialized;
 	var __fs_errored;
